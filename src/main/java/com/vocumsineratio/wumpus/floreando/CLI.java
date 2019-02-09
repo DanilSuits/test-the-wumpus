@@ -21,7 +21,19 @@ public class CLI {
 
         Prompts prompts = new Prompts();
 
+        // The game is running
+
+        // We write the instructions prompt
         out.println(prompts.instructions());
+
+        // We tell the game the prompt has been displayed
+        // The game tells us it needs a line of input
+        // We check for input
+        // The input is exhausted
+        // We tell the game the input is exhausted
+        // Therefore the game quits
+
+        // The game has quit, so we are done.
     }
 
     public static void main(String[] args) {
