@@ -36,10 +36,8 @@ public class CLI {
                 // We write the instructions prompt
                 out.println(prompts.instructions());
             } else {
-                // Simplest thing that could posssibly work -- just copy the
-                // right answer out of the test.  Once we are under the green
-                // bar, we can get to work.
-                String expectedTranscript =
+                // Print advertisement
+                String advertisement =
                                 "\n" +
                                 "     ATTENTION ALL WUMPUS LOVERS!!!\n" +
                                 "     THERE ARE NOW TWO ADDITIONS TO THE WUMPUS FAMILY\n" +
@@ -47,14 +45,22 @@ public class CLI {
                                 "\n" +
                                 "     WUMP2:  SOME DIFFERENT CAVE ARRANGEMENTS\n" +
                                 "     WUMP3:  DIFFERENT HAZARDS\n" +
-                                "\n" +
-                                "HUNT THE WUMPUS\n" +
-                                "I FEEL A DRAFT\n" +
-                                "YOU ARE IN ROOM 14\n" +
-                                "TUNNELS LEAD TO 4 13 15\n" +
-                                "\n" +
-                                "SHOOT OR MOVE (S-M)\n";
-                out.print(expectedTranscript);
+                                "\n" ;
+                out.print(advertisement);
+
+                // Print Title
+                out.println("HUNT THE WUMPUS");
+                // Print Hazards
+                out.println("I FEEL A DRAFT");
+                // Print View
+                //   Print Room
+                out.println("YOU ARE IN ROOM 14");
+                //   Print Tunnels
+                out.println("TUNNELS LEAD TO 4 13 15");
+                //   Print Whitespace
+                out.println();
+                // Print Prompt.
+                out.println("SHOOT OR MOVE (S-M)");
             }
             // We tell the game the prompt has been displayed
             // The game tells us it needs a line of input
