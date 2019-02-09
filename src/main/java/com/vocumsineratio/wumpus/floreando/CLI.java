@@ -28,10 +28,14 @@ public class CLI {
         // The interactive-shell is running
         boolean interactiveLoop = true;
 
-        while (interactiveLoop) {
-            // We write the instructions prompt
-            out.println(prompts.instructions());
+        // The game starts
+        int gameState = 0;
 
+        while (interactiveLoop) {
+            if (0 == gameState) {
+                // We write the instructions prompt
+                out.println(prompts.instructions());
+            }
             // We tell the game the prompt has been displayed
             // The game tells us it needs a line of input
             // We check for input
