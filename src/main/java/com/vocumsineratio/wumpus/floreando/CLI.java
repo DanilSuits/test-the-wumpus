@@ -13,7 +13,15 @@ public class CLI {
             InputStream in,
             PrintStream out) {
 
-        out.println("INSTRUCTIONS Y-N");
+        class Prompts {
+            String instructions() {
+                return "INSTRUCTIONS Y-N";
+            }
+        }
+
+        Prompts prompts = new Prompts();
+
+        out.println(prompts.instructions());
     }
 
     public static void main(String[] args) {
