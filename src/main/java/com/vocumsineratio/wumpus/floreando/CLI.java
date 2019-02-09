@@ -19,7 +19,7 @@ public class CLI {
 
         class Prompts {
             String instructions() {
-                return "INSTRUCTIONS Y-N";
+                return "INSTRUCTIONS (Y-N)";
             }
         }
 

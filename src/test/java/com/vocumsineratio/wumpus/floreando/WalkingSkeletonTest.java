@@ -25,7 +25,7 @@ public class WalkingSkeletonTest {
         CLI.interactiveShell(environment, in, out);
 
         Assertions.assertEquals(
-                "INSTRUCTIONS Y-N\n",
+                "INSTRUCTIONS (Y-N)\n",
                 outputStream.toString()
         );
     }
@@ -42,7 +42,7 @@ public class WalkingSkeletonTest {
         CLI.interactiveShell(environment, in, out);
 
         String expectedTranscript =
-                "INSTRUCTIONS Y-N\n" +
+                "INSTRUCTIONS (Y-N)\n" +
                         "\n" +
                         "     ATTENTION ALL WUMPUS LOVERS!!!\n" +
                         "     THERE ARE NOW TWO ADDITIONS TO THE WUMPUS FAMILY\n" +
