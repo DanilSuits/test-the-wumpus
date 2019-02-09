@@ -3,6 +3,8 @@ package com.vocumsineratio.wumpus.floreando;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Scanner;
 
 /**
  * @author Danil Suits (danil@vast.com)
@@ -13,6 +15,8 @@ public class CLI {
             InputStream in,
             PrintStream out) {
 
+        Scanner lines = new Scanner(in);
+
         class Prompts {
             String instructions() {
                 return "INSTRUCTIONS Y-N";
@@ -21,19 +25,25 @@ public class CLI {
 
         Prompts prompts = new Prompts();
 
-        // The game is running
+        // The interactive-shell is running
+        boolean interactiveLoop = true;
 
-        // We write the instructions prompt
-        out.println(prompts.instructions());
+        while (interactiveLoop) {
+            // We write the instructions prompt
+            out.println(prompts.instructions());
 
-        // We tell the game the prompt has been displayed
-        // The game tells us it needs a line of input
-        // We check for input
-        // The input is exhausted
-        // We tell the game the input is exhausted
-        // Therefore the game quits
-
-        // The game has quit, so we are done.
+            // We tell the game the prompt has been displayed
+            // The game tells us it needs a line of input
+            // We check for input
+            try {
+                String input = lines.nextLine();
+            } catch (NoSuchElementException e) {
+                // The input is exhausted
+                // So there's nothing more to interact with
+                // so the loop is done...
+                interactiveLoop = false;
+            }
+        }
     }
 
     public static void main(String[] args) {
