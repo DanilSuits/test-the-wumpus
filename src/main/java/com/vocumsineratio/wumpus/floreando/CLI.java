@@ -2,6 +2,9 @@ package com.vocumsineratio.wumpus.floreando;
 
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
@@ -15,65 +18,158 @@ public class CLI {
             InputStream in,
             PrintStream out) {
 
-        Scanner lines = new Scanner(in);
-
         class Prompts {
             String instructions() {
                 return "INSTRUCTIONS (Y-N)";
+            }
+
+            String hunting() {
+                return "SHOOT OR MOVE (S-M)";
+            }
+
+            String title() {
+                return "HUNT THE WUMPUS";
+            }
+
+            String pitWarning() {
+                return "I FEEL A DRAFT";
+            }
+
+            String room(int roomNumber) {
+                return "YOU ARE IN ROOM 14";
+            }
+
+            String tunnels(int first, int second, int third) {
+                return "TUNNELS LEAD TO 4 13 15";
+            }
+
+            String advertisement() {
+                return "\n" +
+                        "     ATTENTION ALL WUMPUS LOVERS!!!\n" +
+                        "     THERE ARE NOW TWO ADDITIONS TO THE WUMPUS FAMILY\n" +
+                        " OF PROGRAMS.\n" +
+                        "\n" +
+                        "     WUMP2:  SOME DIFFERENT CAVE ARRANGEMENTS\n" +
+                        "     WUMP3:  DIFFERENT HAZARDS\n"
+                        ;
+
+            }
+
+            String blankLine() {
+                return "";
             }
         }
 
         Prompts prompts = new Prompts();
 
-        // The interactive-shell is running
-        boolean interactiveLoop = true;
+        abstract class Choices<T> {
+            abstract T input();
 
-        // The game starts
-        int gameState = 0;
+            abstract T random();
+        }
 
-        while (interactiveLoop) {
-            if (0 == gameState) {
-                // We write the instructions prompt
-                out.println(prompts.instructions());
-            } else {
-                // Print advertisement
-                String advertisement =
-                                "\n" +
-                                "     ATTENTION ALL WUMPUS LOVERS!!!\n" +
-                                "     THERE ARE NOW TWO ADDITIONS TO THE WUMPUS FAMILY\n" +
-                                " OF PROGRAMS.\n" +
-                                "\n" +
-                                "     WUMP2:  SOME DIFFERENT CAVE ARRANGEMENTS\n" +
-                                "     WUMP3:  DIFFERENT HAZARDS\n" +
-                                "\n" ;
-                out.print(advertisement);
+        class Game {
+            int gameState = 0;
 
-                // Print Title
-                out.println("HUNT THE WUMPUS");
-                // Print Hazards
-                out.println("I FEEL A DRAFT");
-                // Print View
-                //   Print Room
-                out.println("YOU ARE IN ROOM 14");
-                //   Print Tunnels
-                out.println("TUNNELS LEAD TO 4 13 15");
-                //   Print Whitespace
-                out.println();
-                // Print Prompt.
-                out.println("SHOOT OR MOVE (S-M)");
+            int hunter = -1;
+
+            List<String> prompt = Collections.singletonList(prompts.instructions());
+
+            <T> T choice(Choices<T> choices) {
+                switch (gameState) {
+                    case 0:
+                        return choices.input();
+                    case 1:
+                        return choices.random();
+                }
+                return choices.input();
             }
-            // We tell the game the prompt has been displayed
-            // The game tells us it needs a line of input
-            // We check for input
-            try {
-                String input = lines.nextLine();
+
+            List<String> prompt() {
+                if (0 == gameState) {
+                    // We write the instructions prompt
+                    return Collections.singletonList(prompts.instructions());
+                }
+
+                return prompt;
+            }
+
+            void onInput(String line) {
+                prompt = new ArrayList<>();
+
+                prompt.add(prompts.advertisement());
+                prompt.add(prompts.title());
+
                 gameState++;
-            } catch (NoSuchElementException e) {
-                // The input is exhausted
-                // So there's nothing more to interact with
-                // so the loop is done...
-                interactiveLoop = false;
             }
+
+            void onRandom(int random) {
+                hunter = 14;
+                
+                prompt.add(prompts.pitWarning());
+                prompt.add(prompts.room(hunter));
+                prompt.add(prompts.tunnels(4, 13, 15));
+                prompt.add(prompts.blankLine());
+                prompt.add(prompts.hunting());
+
+                gameState++;
+            }
+        }
+
+        class InteractiveLoop {
+            boolean running = true;
+
+            void onQuit() {
+                running = false;
+            }
+        }
+
+        abstract class Action {
+            abstract void mumbleBagel(Game game, InteractiveLoop loop);
+        }
+
+        Scanner lines = new Scanner(in);
+
+        Action inputAction = new Action() {
+            @Override
+            void mumbleBagel(Game game, InteractiveLoop loop) {
+                game.prompt().forEach(out::println);
+                try {
+                    String line = lines.nextLine();
+                    game.onInput(line);
+                } catch (NoSuchElementException e) {
+                    // The input is exhausted
+                    // So there's nothing more to interact with
+                    // so the loop is done...
+                    loop.onQuit();
+                }
+            }
+        };
+
+        Action randomAction = new Action() {
+            @Override
+            void mumbleBagel(Game game, InteractiveLoop loop) {
+                game.onRandom(0);
+            }
+        };
+
+        Choices<Action> inputActions = new Choices<Action>() {
+            @Override
+            Action input() {
+                return inputAction;
+            }
+
+            @Override
+            Action random() {
+                return randomAction;
+            }
+        };
+
+        Game game = new Game();
+        InteractiveLoop interactiveLoop = new InteractiveLoop();
+
+        while (interactiveLoop.running) {
+            game.choice(inputActions).mumbleBagel(game, interactiveLoop);
         }
     }
 
