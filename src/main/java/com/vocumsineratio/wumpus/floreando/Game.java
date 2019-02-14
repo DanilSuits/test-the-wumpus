@@ -16,6 +16,11 @@ import java.util.List;
 public class Game {
     int gameState = 0;
 
+    public <T> T effect(T line, T diceRoll) {
+        if (1 == gameState) return diceRoll;
+        return line;
+    }
+
     public List<String> prompt() {
         Prompts prompts = new Prompts();
 
@@ -39,6 +44,7 @@ public class Game {
 
     public void onLine(String n) {
         //TODO: To change body of created methods use File | Settings | File Templates.
+        gameState++;
     }
 
     public void onDiceRoll(int i) {

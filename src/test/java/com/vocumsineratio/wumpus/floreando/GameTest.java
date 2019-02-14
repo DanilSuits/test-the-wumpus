@@ -11,6 +11,9 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.Collections;
 
+import static com.vocumsineratio.wumpus.floreando.GameTest.Effects.LINE;
+import static com.vocumsineratio.wumpus.floreando.GameTest.Effects.DICEROLL;
+
 /**
  * @author Danil Suits (danil@vast.com)
  */
@@ -52,5 +55,24 @@ public class GameTest {
                 Arrays.asList(split),
                 game.prompt()
         );
+    }
+
+    enum Effects { LINE, DICEROLL}
+    @Test
+    public void test_first_choice_is_input() {
+        Game game = new Game();
+
+        Effects actual = game.effect(LINE, DICEROLL);
+        Assertions.assertEquals(LINE, actual);
+    }
+
+    @Test
+    public void game_needs_random_seed_effect() {
+        Game game = new Game();
+        game.onLine("N");
+
+        Effects actual = game.effect(LINE, DICEROLL);
+        Assertions.assertEquals(DICEROLL, actual);
+
     }
 }
