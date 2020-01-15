@@ -19,14 +19,14 @@ public class WalkingSkeletonTest {
         byte[] nullInput = {};
         ByteArrayInputStream in = new ByteArrayInputStream(nullInput);
 
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        PrintStream out = new PrintStream(outputStream);
+        ByteArrayOutputStream gameTranscript = new ByteArrayOutputStream();
+        PrintStream out = new PrintStream(gameTranscript);
 
         CLI.interactiveShell(environment, in, out);
 
         Assertions.assertEquals(
                 "INSTRUCTIONS (Y-N)\n",
-                outputStream.toString()
+                gameTranscript.toString()
         );
     }
 
