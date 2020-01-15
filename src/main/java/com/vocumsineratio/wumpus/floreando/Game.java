@@ -1,8 +1,3 @@
-/**
- * Copyright Vast 2019. All Rights Reserved.
- * <p/>
- * http://www.vast.com
- */
 package com.vocumsineratio.wumpus.floreando;
 
 import java.util.ArrayList;
