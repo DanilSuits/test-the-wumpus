@@ -15,7 +15,7 @@ import java.util.Map;
 public class WalkingSkeletonTest {
     @Test
     public void first_prompt_should_offer_instructions() {
-        Map<String, String> environment = Collections.EMPTY_MAP;
+        Map<String, String> environment = Collections.emptyMap();
         byte[] nullInput = {};
         ByteArrayInputStream in = new ByteArrayInputStream(nullInput);
 
@@ -32,7 +32,7 @@ public class WalkingSkeletonTest {
 
     @Test
     public void start_the_game_if_the_instructions_are_skipped() {
-        Map<String, String> environment = Collections.EMPTY_MAP;
+        Map<String, String> environment = Collections.emptyMap();
         byte[] nullInput = "N\n".getBytes();
         ByteArrayInputStream in = new ByteArrayInputStream(nullInput);
 
