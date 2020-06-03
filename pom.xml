@@ -16,7 +16,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <junit.jupiter.version>5.5.2</junit.jupiter.version>
+        <junit.jupiter.version>5.6.2</junit.jupiter.version>
     </properties>
 
     <dependencyManagement>
@@ -42,12 +42,6 @@
             <artifactId>junit-jupiter-api</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <scope>test</scope>
-        </dependency>
-
     </dependencies>
 
     <build>
@@ -77,7 +71,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.1.1</version>
+                    <version>3.2.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -87,7 +81,14 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.22.2</version>
+                    <!-- TODO:2020-05-22 I'm not particularly happy about
+                    this, but earlier releases of maven-surefire-plugin
+                    don't engage junit-jupiter-engine, which means that
+                    only a subset of the unit tests are run.  The alternative
+                    work around is to introduce an unnecessary test dependency
+                    on junit-jupiter-engine to suppress the warnings
+                    produced by maven-dependency-plugin:analyze -->
+                    <version>3.0.0-M4</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -101,7 +102,7 @@
                         <plugin>
                             <groupId>com.github.spotbugs</groupId>
                             <artifactId>spotbugs-maven-plugin</artifactId>
-                            <version>3.1.6</version>
+                            <version>3.1.12.2</version>
                             <dependencies>
                                 <!-- overwrite dependency on spotbugs if you want to specify the version of spotbugs -->
                                 <dependency>
@@ -141,7 +142,7 @@
                         <plugin>
                             <groupId>org.owasp</groupId>
                             <artifactId>dependency-check-maven</artifactId>
-                            <version>5.2.1</version>
+                            <version>5.3.2</version>
                         </plugin>
                     </plugins>
                 </pluginManagement>
