@@ -5,7 +5,7 @@ import java.util.Collections;
 /**
  * @author Danil Suits (danil@vast.com)
  */
-class WalkingSkeleton implements Root.Core {
+class WalkingSkeleton implements Root.Actions.Core {
     int state = 0;
     String name = "Anonymous";
 
