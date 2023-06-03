@@ -2,8 +2,9 @@ package com.vocumsineratio.wumpus.milkweed;
 
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.util.Collections;
+import java.util.NoSuchElementException;
 import java.util.Random;
+import java.util.Scanner;
 
 /**
  * @author Danil Suits (danil@vast.com)
@@ -14,12 +15,56 @@ class Root {
             PrintStream out,
             Random random){
 
-        Example core = new Example();
-        Loop loop = new Loop(true);
-        Output output = new Output(out);
-        return new Root.GameLoop(core, loop, output);
+        WalkingSkeleton core = new WalkingSkeleton();
+        return app(in, out, core);
 
     }
+
+    private static Runnable app(InputStream in, PrintStream out, WalkingSkeleton core) {
+        Loop loop = new Loop(true);
+        Output output = new Output(out);
+        Scanner scanner = new Scanner(in);
+
+        Actions.Quit<Runnable> quit = quit(core, loop);
+        Actions.ReadOneLine<Runnable> readOneLine = readOneLine(core, scanner);
+        Actions.FlushLines<Runnable> flushLines = flushLines(core, output);
+
+        return new GameLoop(core, loop, quit, flushLines, readOneLine);
+    }
+
+    private static Actions.Quit<Runnable> quit(WalkingSkeleton core, Loop loop) {
+        Runnable quit = () -> {
+            loop.quit();
+            core.onQuit();
+        };
+
+        return () -> quit;
+    }
+
+    private static Actions.ReadOneLine<Runnable> readOneLine(Core core, Scanner scanner) {
+        Root.ReadOneLine readOneLine = new ReadOneLine(scanner, core);
+
+        return readOneLine(readOneLine);
+    }
+
+    private static Actions.ReadOneLine<Runnable> readOneLine(Root.ReadOneLine readOneLine) {
+        return () -> readOneLine;
+    }
+
+    private static Actions.FlushLines<Runnable> flushLines(Core core, Output output) {
+        return new Actions.FlushLines<Runnable>() {
+            @Override
+            public Runnable flushLines(Iterable<String> lines) {
+                Runnable flushLines = () -> {
+                    output.flushLines(lines);
+                    core.onFlushLines();
+                };
+
+                return flushLines;
+            }
+        };
+    }
+
 
     interface Actions {
         interface Quit<T> {
@@ -29,7 +74,27 @@ class Root {
         interface FlushLines<T> {
             T flushLines(Iterable<String> lines);
         }
+
+        interface ReadOneLine<T> {
+            T readOneLine();
+        }
     }
+
+    interface Core {
+        <T>
+        T action(
+                Actions.Quit<T> quit,
+                Actions.FlushLines<T> flushLines,
+                Actions.ReadOneLine<T> readOneLine
+        );
+
+        void onQuit();
+        void onFlushLines();
+
+        void onLine(String line);
+        void onExhausted();
+    }
+
 
     static class Loop {
 
@@ -60,64 +125,45 @@ class Root {
             out.flush();
         }
     }
-    interface Core {
-        <T>
-        T action(
-                Actions.Quit<T> quit,
-                Actions.FlushLines<T> flushLines
-        );
 
-        void onQuit();
-        void onFlushLines();
-    }
+    static class ReadOneLine implements Runnable {
+        final Scanner scanner;
+        final Core core;
 
-    static class Example implements Core {
-        int state = 0;
-        String name = "Anonymous";
+        ReadOneLine(Scanner scanner, Core core) {
+            this.scanner = scanner;
+            this.core = core;
+        }
 
         @Override
-        public <T> T action(
-                Actions.Quit<T> quit,
-                Actions.FlushLines<T> flushLines) {
-            switch (state) {
-                case 0:
-                    return flushLines.flushLines(
-                            Collections.singletonList(
-                                    "Who are you?"
-                            )
-                    );
-                case 1:
-                    return flushLines.flushLines(
-                            Collections.singletonList(
-                                    "Hello " + this.name
-                            )
-                    );
-                default:
+        public void run() {
+            try {
+                String line = scanner.nextLine();
+                core.onLine(line);
+            } catch (NoSuchElementException e) {
+                core.onExhausted();
             }
-            return quit.quit();
-        }
-
-        @Override
-        public void onQuit() {
-            // NoOp
-        }
-
-        @Override
-        public void onFlushLines() {
-            this.state++;
         }
     }
 
     static class GameLoop implements Runnable {
         final Loop loop;
         final Core core;
+        final Actions.Quit<Runnable> quit;
+        final Actions.FlushLines<Runnable> flushLines;
+        final Actions.ReadOneLine<Runnable> readOneLine;
 
-        final Output output;
-
-        GameLoop(Core core, Loop loop, Output output) {
+        GameLoop(
+                Core core,
+                Loop loop,
+                Actions.Quit<Runnable> quit,
+                Actions.FlushLines<Runnable> flushLines,
+                Actions.ReadOneLine readOneLine) {
             this.core = core;
             this.loop = loop;
-            this.output = output;
+            this.quit = quit;
+            this.flushLines = flushLines;
+            this.readOneLine = readOneLine;
         }
 
         @Override
@@ -134,39 +180,10 @@ class Root {
 
         Runnable action() {
             return core.action(
-                    this::quit,
-                    this::flushLines
+                    this.quit,
+                    this.flushLines,
+                    this.readOneLine
             );
-        }
-
-        Runnable quit() {
-            return new Quit();
-        }
-
-        class Quit implements Runnable {
-            @Override
-            public void run() {
-                Root.GameLoop.this.loop.quit();
-                Root.GameLoop.this.core.onQuit();
-            }
-        }
-
-        Runnable flushLines(Iterable<String> lines) {
-            return new FlushLines(lines);
-        }
-
-        class FlushLines implements Runnable {
-            final Iterable<String> lines;
-
-            FlushLines(Iterable<String> lines) {
-                this.lines = lines;
-            }
-
-            @Override
-            public void run() {
-                GameLoop.this.output.flushLines(lines);
-                GameLoop.this.core.onFlushLines();
-            }
         }
     }
 }
