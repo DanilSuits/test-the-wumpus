@@ -5,15 +5,15 @@ import java.util.Collections;
 /**
  * @author Danil Suits (danil@vast.com)
  */
-class WalkingSkeleton implements Root.Actions.Core {
+class WalkingSkeleton implements Actions.Core {
     int state = 0;
     String name = "Anonymous";
 
     @Override
     public <T> T action(
-            Root.Actions.Quit<T> quit,
-            Root.Actions.FlushLines<T> flushLines,
-            Root.Actions.ReadOneLine<T> readOneLine) {
+            Actions.Quit<T> quit,
+            Actions.FlushLines<T> flushLines,
+            Actions.ReadOneLine<T> readOneLine) {
         switch (state) {
             case 0:
                 return flushLines.flushLines(

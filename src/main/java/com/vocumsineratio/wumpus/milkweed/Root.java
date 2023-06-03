@@ -15,7 +15,7 @@ class Root {
             PrintStream out,
             Random random){
 
-        WalkingSkeleton core = new WalkingSkeleton();
+        Actions.Core core = new WalkingSkeleton();
         return app(in, out, core);
 
     }
@@ -64,37 +64,6 @@ class Root {
             }
         };
     }
-
-
-    interface Actions {
-        interface Quit<T> {
-            T quit();
-        }
-
-        interface FlushLines<T> {
-            T flushLines(Iterable<String> lines);
-        }
-
-        interface ReadOneLine<T> {
-            T readOneLine();
-        }
-
-        interface Core {
-            <T>
-            T action(
-                    Actions.Quit<T> quit,
-                    Actions.FlushLines<T> flushLines,
-                    Actions.ReadOneLine<T> readOneLine
-            );
-
-            void onQuit();
-            void onFlushLines();
-
-            void onLine(String line);
-            void onExhausted();
-        }
-    }
-
 
     static class Loop {
 
@@ -169,9 +138,13 @@ class Root {
         @Override
         public void run() {
             while(running()) {
-                Runnable action = this.action();
-                action.run();
+                step();
             }
+        }
+
+        private void step() {
+            Runnable action = this.action();
+            action.run();
         }
 
         private boolean running() {
