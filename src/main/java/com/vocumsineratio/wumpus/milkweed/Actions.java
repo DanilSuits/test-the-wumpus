@@ -16,7 +16,7 @@ interface Actions {
         T readOneLine();
     }
 
-    interface Core {
+    interface Core<S> {
         <T>
         T action(
                 Quit<T> quit,
@@ -24,12 +24,12 @@ interface Actions {
                 ReadOneLine<T> readOneLine
         );
 
-        void onQuit();
+        S onQuit();
 
-        void onFlushLines();
+        S onFlushLines();
 
-        void onLine(String line);
+        S onLine(String line);
 
-        void onExhausted();
+        S onExhausted();
     }
 }

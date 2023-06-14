@@ -15,12 +15,12 @@ class Root {
             PrintStream out,
             Random random){
 
-        Actions.Core core = new WalkingSkeleton();
+        Actions.Core<?> core = WalkingSkeleton.start();
         return app(in, out, core);
 
     }
 
-    private static Runnable app(InputStream in, PrintStream out, Actions.Core core) {
+    private static Runnable app(InputStream in, PrintStream out, Actions.Core<?> core) {
         Loop loop = new Loop(true);
         Output output = new Output(out);
         Scanner scanner = new Scanner(in);
@@ -32,7 +32,7 @@ class Root {
         return new GameLoop(core, loop, quit, flushLines, readOneLine);
     }
 
-    private static Actions.Quit<Runnable> quit(Actions.Core core, Loop loop) {
+    private static Actions.Quit<Runnable> quit(Actions.Core<?> core, Loop loop) {
         Runnable quit = () -> {
             loop.quit();
             core.onQuit();
@@ -41,7 +41,7 @@ class Root {
         return () -> quit;
     }
 
-    private static Actions.ReadOneLine<Runnable> readOneLine(Actions.Core core, Scanner scanner) {
+    private static Actions.ReadOneLine<Runnable> readOneLine(Actions.Core<?> core, Scanner scanner) {
         Root.ReadOneLine readOneLine = new ReadOneLine(scanner, core);
 
         return readOneLine(readOneLine);
@@ -51,7 +51,7 @@ class Root {
         return () -> readOneLine;
     }
 
-    private static Actions.FlushLines<Runnable> flushLines(Actions.Core core, Output output) {
+    private static Actions.FlushLines<Runnable> flushLines(Actions.Core<?> core, Output output) {
         return new Actions.FlushLines<Runnable>() {
             @Override
             public Runnable flushLines(Iterable<String> lines) {
@@ -97,9 +97,9 @@ class Root {
 
     static class ReadOneLine implements Runnable {
         final Scanner scanner;
-        final Actions.Core core;
+        final Actions.Core<?> core;
 
-        ReadOneLine(Scanner scanner, Actions.Core core) {
+        ReadOneLine(Scanner scanner, Actions.Core<?> core) {
             this.scanner = scanner;
             this.core = core;
         }
@@ -117,17 +117,17 @@ class Root {
 
     static class GameLoop implements Runnable {
         final Loop loop;
-        final Actions.Core core;
+        final Actions.Core<?> core;
         final Actions.Quit<Runnable> quit;
         final Actions.FlushLines<Runnable> flushLines;
         final Actions.ReadOneLine<Runnable> readOneLine;
 
         GameLoop(
-                Actions.Core core,
+                Actions.Core<?> core,
                 Loop loop,
                 Actions.Quit<Runnable> quit,
                 Actions.FlushLines<Runnable> flushLines,
-                Actions.ReadOneLine readOneLine) {
+                Actions.ReadOneLine<Runnable> readOneLine) {
             this.core = core;
             this.loop = loop;
             this.quit = quit;
