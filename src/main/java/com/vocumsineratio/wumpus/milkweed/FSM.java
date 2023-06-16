@@ -15,9 +15,9 @@ class FSM {
 
         @Override
         public <T> T action(
-                Actions.Quit<T> quit,
-                Actions.FlushLines<T> flushLines,
-                Actions.ReadOneLine<T> readOneLine) {
+                Actions.Quit<? extends T> quit,
+                Actions.FlushLines<? extends T> flushLines,
+                Actions.ReadOneLine<? extends T> readOneLine) {
             return currentState.action(
                     quit,
                     flushLines,
@@ -52,7 +52,10 @@ class FSM {
 
     static class EndOfGame implements State {
         @Override
-        public <T> T action(Actions.Quit<T> quit, Actions.FlushLines<T> flushLines, Actions.ReadOneLine<T> readOneLine) {
+        public <T> T action(
+                Actions.Quit<? extends T> quit,
+                Actions.FlushLines<? extends T> flushLines,
+                Actions.ReadOneLine<? extends T> readOneLine) {
             return quit.quit();
         }
 

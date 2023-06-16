@@ -19,9 +19,9 @@ interface Actions {
     interface Core<S> {
         <T>
         T action(
-                Quit<T> quit,
-                FlushLines<T> flushLines,
-                ReadOneLine<T> readOneLine
+                Quit<? extends T> quit,
+                FlushLines<? extends T> flushLines,
+                ReadOneLine<? extends T> readOneLine
         );
 
         S onQuit();

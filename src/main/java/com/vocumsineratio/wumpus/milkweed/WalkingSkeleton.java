@@ -9,7 +9,7 @@ class WalkingSkeleton{
     static Actions.Core<Void> start() {
         return new FSM.Facade(
             new AskWho()
-        )               ;
+        );
     }
 
     static final FSM.State endOfGame = new FSM.EndOfGame();
@@ -27,7 +27,10 @@ class WalkingSkeleton{
         }
 
         @Override
-        public <T> T action(Actions.Quit<T> quit, Actions.FlushLines<T> flushLines, Actions.ReadOneLine<T> readOneLine) {
+        public <T> T action(
+                Actions.Quit<? extends T> quit,
+                Actions.FlushLines<? extends T> flushLines,
+                Actions.ReadOneLine<? extends T> readOneLine) {
             return flushLines.flushLines(
                     Collections.singletonList(
                             "Hello " + this.name
@@ -38,7 +41,10 @@ class WalkingSkeleton{
 
     static class ReadName extends FSM.EndOfGame {
         @Override
-        public <T> T action(Actions.Quit<T> quit, Actions.FlushLines<T> flushLines, Actions.ReadOneLine<T> readOneLine) {
+        public <T> T action(
+                Actions.Quit<? extends T> quit,
+                Actions.FlushLines<? extends T> flushLines,
+                Actions.ReadOneLine<? extends T> readOneLine) {
             return readOneLine.readOneLine();
         }
 
@@ -55,7 +61,10 @@ class WalkingSkeleton{
 
     static class AskWho extends FSM.EndOfGame {
         @Override
-        public <T> T action(Actions.Quit<T> quit, Actions.FlushLines<T> flushLines, Actions.ReadOneLine<T> readOneLine) {
+        public <T> T action(
+                Actions.Quit<? extends T> quit,
+                Actions.FlushLines<? extends T> flushLines,
+                Actions.ReadOneLine<? extends T> readOneLine) {
             return flushLines.flushLines(
                     Collections.singletonList(
                             "Who are you?"
@@ -67,5 +76,11 @@ class WalkingSkeleton{
         public FSM.State onFlushLines() {
             return new ReadName();
         }
+    }
+
+    public static void main(String[] args) {
+        StdIO.run(
+                start()
+        );
     }
 }
