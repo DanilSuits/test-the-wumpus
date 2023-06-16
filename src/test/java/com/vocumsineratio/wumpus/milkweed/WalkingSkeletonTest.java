@@ -47,7 +47,11 @@ class WalkingSkeletonTest {
         static class StdIn {
             static InputStream inputStream (String... lines) {
                 String joined = String.join("",
-                        Arrays.stream(lines).map(s -> s + "\n").toArray(String[]::new)
+                        Arrays.stream(
+                                lines
+                        ).map(
+                                s -> s + System.lineSeparator()
+                        ).toArray(String[]::new)
                 );
 
                 return new ByteArrayInputStream(
@@ -58,7 +62,9 @@ class WalkingSkeletonTest {
 
         static class StdOut {
             static String [] actual(ByteArrayOutputStream transcript) {
-                return transcript.toString().split("\n");
+                return transcript.toString().split(
+                        System.lineSeparator()
+                );
             }
 
             static String [] expected(String... outputs) {
